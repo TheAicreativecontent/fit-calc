@@ -1,1 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuri · เครื่องคำนวณ</title>
+<style>
+  :root{
+    --paper:#FAF7F1;
+    --ink:#2B2A28;
+    --ink-soft:#6B655D;
+    --teal:#2F5D62;
+    --teal-dark:#20434A;
+    --ochre:#C08A3F;
+    --card:#FFFFFF;
+    --line:#E4DED2;
+    --danger:#B4472E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Noto Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+  }
+  header{
+    margin-bottom:28px;
+  }
+  header h1{
+    font-family:"Noto Serif Thai",Georgia,serif;
+    font-weight:500;
+    font-size:28px;
+    margin:0 0 6px;
+    color:var(--teal-dark);
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:18px;
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  input[type=number], select{
+    width:100%;
+    padding:12px 14px;
+    font-size:17px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:inherit;
+    appearance:none;
+  }
+  input[type=number]:focus, select:focus{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+  }
+  .row2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .sexo-toggle{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .sexo-toggle button{
+    padding:12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .sexo-toggle button.active{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+  .calc-btn{
+    width:100%;
+    padding:15px;
+    font-size:17px;
+    font-weight:600;
+    color:#fff;
+    background:var(--teal);
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .calc-btn:active{background:var(--teal-dark);}
+  .results{
+    display:none;
+  }
+  .results.show{display:block;}
+  .big-number{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .big-number .num{
+    font-family:"Noto Serif Thai",Georgia,serif;
+    font-size:40px;
+    color:var(--teal-dark);
+    line-height:1;
+  }
+  .big-number .unit{
+    font-size:15px;
+    color:var(--ink-soft);
+  }
+  .results-label{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .macro-list{
+    list-style:none;
+    padding:0;
+    margin:16px 0 0;
+    border-top:1px solid var(--line);
+  }
+  .macro-list li{
+    display:flex;
+    justify-content:space-between;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .macro-name{color:var(--ink);}
+  .macro-value{color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+  .steps-card .num{color:var(--ochre);}
+  .note{
+    font-size:14px;
+    color:var(--ink-soft);
+    background:#F3EEE3;
+    border-left:3px solid var(--ochre);
+    padding:12px 14px;
+    border-radius:6px;
+    margin-top:16px;
+  }
+  .warn{
+    font-size:14px;
+    color:var(--danger);
+    background:#FBEBE6;
+    border-left:3px solid var(--danger);
+    padding:12px 14px;
+    border-radius:6px;
+    margin-top:16px;
+  }
+  footer{
+    text-align:center;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>เครื่องคำนวณของ Yuri</h1>
+    <p>แคลอรี่ โปรตีน และเป้าหมายก้าวเดินต่อวัน คำนวณเฉพาะสำหรับคุณ</p>
+  </header>
 
+  <div class="card">
+    <div class="field">
+      <label>เพศ</label>
+      <div class="sexo-toggle">
+        <button type="button" id="btn-mujer" class="active">หญิง</button>
+        <button type="button" id="btn-hombre">ชาย</button>
+      </div>
+    </div>
+
+    <div class="field row2">
+      <div>
+        <label for="peso">น้ำหนักปัจจุบัน (กก.)</label>
+        <input type="number" id="peso" inputmode="decimal" placeholder="60">
+      </div>
+      <div>
+        <label for="altura">ส่วนสูง (ซม.)</label>
+        <input type="number" id="altura" inputmode="numeric" placeholder="160">
+      </div>
+    </div>
+
+    <div class="field row2">
+      <div>
+        <label for="edad">อายุ</label>
+        <input type="number" id="edad" inputmode="numeric" placeholder="55">
+      </div>
+      <div>
+        <label for="actividad">กิจกรรมประจำวัน</label>
+        <select id="actividad">
+          <option value="1.2">นั่งทำงานเป็นส่วนใหญ่</option>
+          <option value="1.375">เบา (เดินเล่น งานบ้าน)</option>
+          <option value="1.55" selected>ปานกลาง</option>
+          <option value="1.725">กระฉับกระเฉง</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field row2">
+      <div>
+        <label for="kgperder">น้ำหนักที่ต้องการลด (กก.)</label>
+        <input type="number" id="kgperder" inputmode="decimal" placeholder="5">
+      </div>
+      <div>
+        <label for="semanas">ภายในกี่สัปดาห์?</label>
+        <input type="number" id="semanas" inputmode="numeric" placeholder="12">
+      </div>
+    </div>
+
+    <button class="calc-btn" id="calcular">คำนวณ</button>
+  </div>
+
+  <div class="results" id="resultados">
+    <div class="card">
+      <div class="results-label">แคลอรี่ต่อวัน</div>
+      <div class="big-number"><span class="num" id="out-kcal">–</span><span class="unit">กิโลแคลอรี่</span></div>
+      <ul class="macro-list">
+        <li><span class="macro-name">โปรตีน</span><span class="macro-value" id="out-prot">–</span></li>
+        <li><span class="macro-name">ไขมัน</span><span class="macro-value" id="out-fat">–</span></li>
+        <li><span class="macro-name">คาร์โบไฮเดรต</span><span class="macro-value" id="out-carb">–</span></li>
+      </ul>
+      <div id="out-warn"></div>
+    </div>
+
+    <div class="card steps-card">
+      <div class="results-label">เป้าหมายก้าวเดินต่อวัน</div>
+      <div class="big-number"><span class="num" id="out-steps">–</span><span class="unit">ก้าว</span></div>
+      <div class="note">จำนวนก้าวนี้เป็นเป้าหมายคร่าวๆ เพื่อให้เคลื่อนไหวมากขึ้น ไม่ใช่ข้อบังคับที่ต้องทำให้ได้ทุกวัน การเดินมากขึ้นกว่าที่เคยทำอยู่ก็มีประโยชน์แล้ว</div>
+    </div>
+
+    <div class="note">
+      เครื่องคำนวณนี้ให้คำแนะนำทั่วไปโดยอิงจากสูตรมาตรฐาน (Mifflin-St Jeor) ไม่ใช่คำแนะนำทางการแพทย์ ควรปรึกษาแพทย์หรือนักโภชนาการ โดยเฉพาะหากมีปัญหาสุขภาพ
+    </div>
+  </div>
+
+  <footer>ทำขึ้นเพื่อคุณโดยเฉพาะ · สำหรับใช้ส่วนตัว</footer>
+</div>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'fitcalc_nombre_inputs';
+  var sexo = 'mujer';
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  $('btn-mujer').addEventListener('click', function(){
+    sexo = 'mujer';
+    $('btn-mujer').classList.add('active');
+    $('btn-hombre').classList.remove('active');
+  });
+  $('btn-hombre').addEventListener('click', function(){
+    sexo = 'hombre';
+    $('btn-hombre').classList.add('active');
+    $('btn-mujer').classList.remove('active');
+  });
+
+  function loadSaved(){
+    try{
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if(!saved) return;
+      if(saved.sexo === 'hombre'){ $('btn-hombre').click(); }
+      $('peso').value = saved.peso || '';
+      $('altura').value = saved.altura || '';
+      $('edad').value = saved.edad || '';
+      $('actividad').value = saved.actividad || '1.55';
+      $('kgperder').value = saved.kgperder || '';
+      $('semanas').value = saved.semanas || '';
+    }catch(e){}
+  }
+
+  function save(data){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+  }
+
+  $('calcular').addEventListener('click', function(){
+    var peso = parseFloat($('peso').value);
+    var altura = parseFloat($('altura').value);
+    var edad = parseFloat($('edad').value);
+    var actividad = parseFloat($('actividad').value);
+    var kgPerder = parseFloat($('kgperder').value) || 0;
+    var semanas = parseFloat($('semanas').value) || 0;
+
+    if(!peso || !altura || !edad){
+      alert('กรุณากรอกอย่างน้อยน้ำหนัก ส่วนสูง และอายุ');
+      return;
+    }
+
+    save({sexo:sexo, peso:peso, altura:altura, edad:edad, actividad:actividad, kgperder:kgPerder, semanas:semanas});
+
+    var bmr = sexo === 'hombre'
+      ? (10*peso + 6.25*altura - 5*edad + 5)
+      : (10*peso + 6.25*altura - 5*edad - 161);
+
+    var tdee = bmr * actividad;
+
+    var deficitDiario = 0;
+    if(kgPerder > 0 && semanas > 0){
+      deficitDiario = (kgPerder * 7700) / (semanas * 7);
+    }
+    var deficitMax = tdee * 0.25;
+    var warn = '';
+    if(deficitDiario > deficitMax){
+      warn = 'อัตราที่ตั้งไว้ทำให้ต้องลดแคลอรี่มากเกินไป จึงปรับให้อยู่ในระดับที่ปลอดภัย (ไม่เกิน 25% ของพลังงานที่ใช้ต่อวัน)';
+      deficitDiario = deficitMax;
+    }
+
+    var kcalObjetivo = tdee - deficitDiario;
+
+    var suelo = sexo === 'hombre' ? 1500 : 1200;
+    if(kcalObjetivo < suelo){
+      warn = (warn ? warn + ' ' : '') + 'และปรับให้ไม่ต่ำกว่า ' + suelo + ' กิโลแคลอรี่ต่อวัน เพื่อความปลอดภัย';
+      kcalObjetivo = suelo;
+    }
+
+    var proteinaG = Math.round(peso * 1.8);
+    var grasaG = Math.round((kcalObjetivo * 0.27) / 9);
+    var kcalRestantes = kcalObjetivo - (proteinaG*4) - (grasaG*9);
+    var carbosG = Math.max(0, Math.round(kcalRestantes / 4));
+
+    var pasosBase = actividad <= 1.2 ? 6000 : actividad <= 1.375 ? 7500 : actividad <= 1.55 ? 9000 : 10500;
+    var pasosObjetivo = deficitDiario > 0 ? pasosBase + 1500 : pasosBase;
+
+    $('out-kcal').textContent = Math.round(kcalObjetivo).toLocaleString('th-TH');
+    $('out-prot').textContent = proteinaG + ' กรัม';
+    $('out-fat').textContent = grasaG + ' กรัม';
+    $('out-carb').textContent = carbosG + ' กรัม';
+    $('out-steps').textContent = pasosObjetivo.toLocaleString('th-TH');
+
+    $('out-warn').innerHTML = warn ? '<div class="warn">' + warn + '</div>' : '';
+
+    $('resultados').classList.add('show');
+    $('resultados').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  loadSaved();
+})();
+</script>
+</body>
+</html>
